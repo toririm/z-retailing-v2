@@ -1,3 +1,4 @@
+import type { LinksFunction } from "@remix-run/cloudflare";
 import {
 	Links,
 	Meta,
@@ -6,7 +7,6 @@ import {
 	ScrollRestoration,
 } from "@remix-run/react";
 import "./tailwind.css";
-import { LinksFunction } from "@remix-run/cloudflare";
 
 export const links: LinksFunction = () => [
 	{ rel: "icon", href: "/favicon.png", type: "image/png" },

@@ -6,11 +6,12 @@ import {
 } from "@remix-run/cloudflare";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
+import { modal } from "~/.client/modal";
 import { prismaClient } from "~/.server/prisma";
 import { badRequest } from "~/.server/request";
 import { getUser } from "~/.server/supabase";
+import { createCard, teamsWebhook } from "~/.server/teams-webhook";
 import { dayjsJP } from "~/utils/dayjs";
-import { modal } from "~/.client/modal";
 
 export const meta: MetaFunction = () => {
 	return [
@@ -70,7 +71,13 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 	}
 	const form = await request.formData();
 	const itemId = form.get("itemId");
-	if (typeof itemId !== "string") {
+	const itemName = form.get("itemName");
+	const itemPrice = form.get("itemPrice");
+	if (
+		typeof itemId !== "string" ||
+		typeof itemName !== "string" ||
+		typeof itemPrice !== "string"
+	) {
 		return badRequest({
 			itemId,
 			success: false,
@@ -78,18 +85,20 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 		});
 	}
 	const prisma = prismaClient(context);
-	try {
-		await prisma.purchase.create({
-			data: {
-				userId: user.id,
-				itemId,
-			},
-		});
-		return {
+	const purchasePrimise = prisma.purchase.create({
+		data: {
+			userId: user.id,
 			itemId,
-			success: true,
-			errorMsg: null,
-		};
+		},
+	});
+	const webhook = new teamsWebhook(context);
+	const card = createCard(
+		"購入通知",
+		`誰かが${itemName}（¥${itemPrice}）を購入しました！`,
+	);
+	const webhookPromise = webhook.sendCard("購入通知", card);
+	try {
+		await Promise.all([purchasePrimise, webhookPromise]);
 	} catch (e) {
 		console.log(e);
 		return badRequest({
@@ -98,6 +107,11 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 			errorMsg: "購入に失敗しました",
 		});
 	}
+	return {
+		itemId,
+		success: true,
+		errorMsg: null,
+	};
 };
 
 export default function Index() {
@@ -164,6 +178,8 @@ export default function Index() {
 							<div className="modal-action">
 								<Form method="post">
 									<input type="hidden" name="itemId" value={item.id} />
+									<input type="hidden" name="itemName" value={item.name} />
+									<input type="hidden" name="itemPrice" value={item.price} />
 									<button
 										className="btn btn-info"
 										type="submit"

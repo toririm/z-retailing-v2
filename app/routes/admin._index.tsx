@@ -9,6 +9,7 @@ import { modal } from "~/.client/modal";
 import { prismaClient } from "~/.server/prisma";
 import { badRequest } from "~/.server/request";
 import { getAdmin } from "~/.server/supabase";
+import { createCard, teamsWebhook } from "~/.server/teams-webhook";
 import { dayjsJP } from "~/utils/dayjs";
 
 export const meta = () => [
@@ -67,14 +68,26 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 		});
 	}
 	const prisma = prismaClient(context);
+	const prismaPromise = prisma.item.create({
+		data: {
+			name,
+			price: priceNum,
+		},
+	});
+	const webhook = new teamsWebhook(context);
+	const card = createCard(
+		"新商品追加！",
+		`${name}（¥${price}）が追加されました！`,
+	);
+	const notifyPromise = webhook.sendCard(
+		`${name}（¥${price}）が追加されました！`,
+		card,
+	);
 	try {
-		const result = await prisma.item.create({
-			data: {
-				name,
-				price: priceNum,
-			},
-		});
-		console.log(result);
+		const [addResult, notifyResult] = await Promise.all([
+			prismaPromise,
+			notifyPromise,
+		]);
 		return {
 			errorMsg: null,
 		};

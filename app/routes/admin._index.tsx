@@ -5,11 +5,11 @@ import type {
 import { redirect } from "@remix-run/cloudflare";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
+import { modal } from "~/.client/modal";
 import { prismaClient } from "~/.server/prisma";
 import { badRequest } from "~/.server/request";
 import { getAdmin } from "~/.server/supabase";
 import { dayjsJP } from "~/utils/dayjs";
-import { modal } from "~/.client/modal";
 
 export const meta = () => [
 	{ title: "管理者ページ | Z物販" },

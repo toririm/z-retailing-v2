@@ -93,6 +93,7 @@ export default function Admin() {
 		name: "",
 		price: "",
 	});
+	const [notifyText, setNotifyText] = useState("");
 	const handleSubmit = () => {
 		setInputItem({
 			name: "",
@@ -123,6 +124,18 @@ export default function Admin() {
 								<td>{item.purchases.length}</td>
 								<td>{dayjs(item.createdAt).tz().format("YYYY-MM-DD HH:mm")}</td>
 								<td>
+									<button
+										type="button"
+										className="btn btn-xs btn-outline btn-accent m-1"
+										onClick={() => {
+											modal("modal-notify").showModal();
+											setNotifyText(
+												`${item.name}（¥${item.price}）を入荷しました！`,
+											);
+										}}
+									>
+										通知する
+									</button>
 									<button
 										type="button"
 										className="btn btn-xs btn-outline btn-error"
@@ -268,6 +281,36 @@ export default function Admin() {
 						</form>
 					</dialog>
 				))}
+				<dialog key="notify" className="modal" id="modal-notify">
+					<div className="modal-box">
+						<h3 className="font-bold text-lg">通知を送信しますか？</h3>
+						<textarea
+							className="textarea textarea-bordered w-96 mt-2"
+							value={notifyText}
+							onChange={(e) => setNotifyText(e.target.value)}
+						/>
+						<div className="modal-action">
+							<Form method="post" action="notify">
+								<input type="hidden" name="notifyText" value={notifyText} />
+								<button
+									className="btn btn-info"
+									type="submit"
+									onClick={() => modal("modal-notify").close()}
+								>
+									送信
+								</button>
+							</Form>
+							<form method="dialog">
+								<button type="submit" className="btn">
+									キャンセル
+								</button>
+							</form>
+						</div>
+					</div>
+					<form method="dialog" className="modal-backdrop">
+						<button type="submit">close</button>
+					</form>
+				</dialog>
 			</div>
 		</>
 	);

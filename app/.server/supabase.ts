@@ -7,8 +7,8 @@ import { commitSession, destroySession, getSession } from "./session";
 export const supabaseClient = (context: AppLoadContext) => {
 	const { env } = context.cloudflare;
 	return createClient(
-		env.SUPABASE_URL as string,
-		env.SUPABASE_ANON_KEY as string,
+		env.SUPABASE_URL,
+		env.SUPABASE_ANON_KEY,
 		{
 			global: {
 				fetch: (...args) => fetch(...args),

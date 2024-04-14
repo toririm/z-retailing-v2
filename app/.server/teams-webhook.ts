@@ -5,7 +5,7 @@ export class teamsWebhook {
 
 	constructor(context: AppLoadContext) {
 		const env = context.cloudflare.env;
-		this.webhookUrl = env.TEAMS_WEBHOOK_URL as string;
+		this.webhookUrl = env.TEAMS_WEBHOOK_URL;
 	}
 
 	sendCard = async (summary: string, card: object) => {

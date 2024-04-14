@@ -6,7 +6,12 @@ import type { PlatformProxy } from "wrangler";
 // Need this empty interface so that typechecking passes
 // even if no `wrangler.toml` exists.
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface Env {};
+interface Env {
+	SUPABASE_URL: string;
+	SUPABASE_ANON_KEY: string;
+	DATABASE_URL_WITH_ACCELERATE: string;
+	TEAMS_WEBHOOK_URL: string;
+};
 
 type Cloudflare = Omit<PlatformProxy<Env>, "dispose">;
 

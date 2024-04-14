@@ -92,11 +92,9 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 		},
 	});
 	const webhook = new teamsWebhook(context);
-	const card = createCard(
-		"購入通知",
-		`誰かが${itemName}（¥${itemPrice}）を購入しました！`,
-	);
-	const webhookPromise = webhook.sendCard("購入通知", card);
+	const webhookMesssage = `誰かが${itemName}（¥${itemPrice}）を購入しました！`;
+	const card = createCard("購入通知", webhookMesssage);
+	const webhookPromise = webhook.sendCard(webhookMesssage, card);
 	try {
 		await Promise.all([purchasePrimise, webhookPromise]);
 	} catch (e) {

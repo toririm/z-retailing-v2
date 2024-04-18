@@ -9,6 +9,7 @@ import { supabaseClient } from "~/.server/supabase";
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 	const url = new URL(request.url);
 	const token_hash = url.searchParams.get("token_hash");
+	const headers = new Headers();
 	if (typeof token_hash !== "string") {
 		return badRequest({
 			message: "Invalid query. If you're not happy with it, try again.",
@@ -17,7 +18,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 	const {
 		data: { session: supabaseSession },
 		error,
-	} = await supabaseClient(context).auth.verifyOtp({
+	} = await supabaseClient(context, request, headers).auth.verifyOtp({
 		token_hash,
 		type: "email",
 	});

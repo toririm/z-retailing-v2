@@ -21,7 +21,8 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
-	const user = await getUser(context, request);
+	const headers = new Headers();
+	const user = await getUser(context, request, headers);
 	if (!user) {
 		return null;
 	}
@@ -65,7 +66,8 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
-	const user = await getUser(context, request);
+	const headers = new Headers();
+	const user = await getUser(context, request, headers);
 	if (!user) {
 		return redirect("/login");
 	}

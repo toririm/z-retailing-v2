@@ -1,16 +1,15 @@
-import type { Headers, Request } from "@cloudflare/workers-types";
 import type { User } from "@prisma/client";
-import { type AppLoadContext, redirect, LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { type AppLoadContext, redirect, type LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { createServerClient, parse, serialize } from "@supabase/ssr";
 import { type User as AuthUser, createClient } from "@supabase/supabase-js";
 import { prismaClient } from "./prisma";
 import { commitSession, destroySession, getSession } from "./session";
 
-export const supabaseClient = ({
-	context,
-	request,
-	headers,
-}: LoaderFunctionArgs) => {
+export const supabaseClient = (
+	context: AppLoadContext,
+	request: LoaderFunctionArgs["request"],
+	headers: Headers,
+) => {
 	const { env } = context.cloudflare;
 	const cookies = parse(request.headers.get("Cookie") || "");
 	return createServerClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
@@ -30,7 +29,7 @@ export const supabaseClient = ({
 
 export const getAuthUser = async (
 	context: AppLoadContext,
-	request: Request,
+	request: LoaderFunctionArgs["request"],
 	headers: Headers,
 ): Promise<AuthUser | null> => {
 	const supabase = supabaseClient(context, request, headers);
@@ -42,7 +41,7 @@ export const getAuthUser = async (
 
 export const logout = async (
 	context: AppLoadContext,
-	request: Request,
+	request: LoaderFunctionArgs["request"],
 	headers: Headers,
 	redirectUrl: string,
 ) => {
@@ -53,7 +52,7 @@ export const logout = async (
 
 export const getAdmin = async (
 	context: AppLoadContext,
-	request: Request,
+	request: LoaderFunctionArgs["request"],
 	headers: Headers,
 ): Promise<User | null> => {
 	const authUser = await getAuthUser(context, request, headers);
@@ -72,7 +71,7 @@ export const getAdmin = async (
 
 export const getUser = async (
 	context: AppLoadContext,
-	request: Request,
+	request: LoaderFunctionArgs["request"],
 	headers: Headers,
 ): Promise<User | null> => {
 	const authUser = await getAuthUser(context, request, headers);

@@ -3,7 +3,8 @@ import { Link, Outlet } from "@remix-run/react";
 import { getAdmin } from "~/.server/supabase";
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
-	const adminUser = await getAdmin(context, request);
+	const headers = new Headers();
+	const adminUser = await getAdmin(context, request, headers);
 	if (!adminUser) {
 		return redirect("/user");
 	}

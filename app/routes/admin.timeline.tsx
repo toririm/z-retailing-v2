@@ -10,7 +10,8 @@ export const meta = () => [
 ];
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
-	const admin = getAdmin(context, request);
+	const headers = new Headers();
+	const admin = getAdmin(context, request, headers);
 	if (!admin) {
 		return redirect("/user");
 	}

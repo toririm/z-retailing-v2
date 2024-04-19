@@ -11,7 +11,8 @@ export const loader = async ({
 	params,
 	request,
 }: LoaderFunctionArgs) => {
-	const adminUser = await getAdmin(context, request);
+	const headers = new Headers();
+	const adminUser = await getAdmin(context, request, headers);
 	if (!adminUser) {
 		return redirect("/user");
 	}

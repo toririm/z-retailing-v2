@@ -36,7 +36,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 	).auth.signInWithOtp({
 		email,
 	});
-	return redirect("/login/wait", 303);
+	return redirect(`/login/verify?email=${email}`, 303);
 };
 
 export default function Login() {

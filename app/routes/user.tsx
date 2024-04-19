@@ -41,7 +41,7 @@ export default function UserRoute() {
 					</Link>
 				</div>
 			</nav>
-			{navigation.state === "loading" ? (
+			{navigation.state !== "idle" ? (
 				<div className="h-screen flex items-center justify-center">
 					<span className="loading loading-spinner loading-lg" />
 				</div>

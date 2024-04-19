@@ -102,34 +102,36 @@ export default function AdminUsersDetails() {
 						</button>
 					</div>
 				</div>
-				<table className="table table-zebra">
-					<thead>
-						<tr>
-							<th />
-							<th>購入日</th>
-							<th>商品名</th>
-							<th>金額</th>
-						</tr>
-					</thead>
-					<tbody>
-						{thisDatePurchases().map((purchase, index) => (
-							<tr key={purchase.id}>
-								<th>{index + 1}</th>
-								<td>{dayjs(purchase.createdAt).tz().format("M/D H:mm")}</td>
-								<td>{purchase.item.name}</td>
-								<td>{purchase.item.price}</td>
-							</tr>
-						))}
-						{thisDatePurchases().length === 0 && (
+				<div className="overflow-y-scroll h-[49svh]">
+					<table className="table table-zebra">
+						<thead className="sticky top-0 bg-base-200">
 							<tr>
 								<th />
-								<td colSpan={3}>
-									{current.year()}.{current.month() + 1}の購入履歴はありません
-								</td>
+								<th>購入日</th>
+								<th>商品名</th>
+								<th>金額</th>
 							</tr>
-						)}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{thisDatePurchases().map((purchase, index) => (
+								<tr key={purchase.id}>
+									<th>{index + 1}</th>
+									<td>{dayjs(purchase.createdAt).tz().format("M/D H:mm")}</td>
+									<td>{purchase.item.name}</td>
+									<td>{purchase.item.price}</td>
+								</tr>
+							))}
+							{thisDatePurchases().length === 0 && (
+								<tr>
+									<th />
+									<td colSpan={3}>
+										{current.year()}.{current.month() + 1}の購入履歴はありません
+									</td>
+								</tr>
+							)}
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<div className="w-1/3">
 				<div className="card card-bordered shadow-xl w-72 bg-base-200">

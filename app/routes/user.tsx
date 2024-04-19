@@ -1,4 +1,4 @@
-import { redirect } from "@remix-run/cloudflare";
+import { json, redirect } from "@remix-run/cloudflare";
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { Link, Outlet, useLoaderData, useNavigation } from "@remix-run/react";
 import { prismaClient } from "~/.server/prisma";
@@ -18,7 +18,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 		return redirect("/setup");
 	}
 	console.log(user);
-	return { admin: user.admin };
+	return json({ admin: user.admin }, { headers });
 };
 
 export default function UserRoute() {

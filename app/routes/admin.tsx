@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare";
+import { type LoaderFunctionArgs, redirect, json } from "@remix-run/cloudflare";
 import { Link, Outlet } from "@remix-run/react";
 import { getAdmin } from "~/.server/supabase";
 
@@ -8,7 +8,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 	if (!adminUser) {
 		return redirect("/user");
 	}
-	return {};
+	return json({}, { headers });
 };
 
 export default function AdminRoute() {

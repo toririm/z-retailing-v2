@@ -1,71 +1,61 @@
 import type { User } from "@prisma/client";
-import { type AppLoadContext, redirect } from "@remix-run/cloudflare";
+import { type AppLoadContext, redirect, type LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { createServerClient, parse, serialize } from "@supabase/ssr";
 import { type User as AuthUser, createClient } from "@supabase/supabase-js";
 import { prismaClient } from "./prisma";
 import { commitSession, destroySession, getSession } from "./session";
 
-export const supabaseClient = (context: AppLoadContext) => {
-	const { env } = context.cloudflare;
-	return createClient(
-		env.SUPABASE_URL,
-		env.SUPABASE_ANON_KEY,
-		{
-			global: {
-				fetch: (...args) => fetch(...args),
-			},
-		},
-	);
-};
-
-export const getAuthUser = async (
+export const supabaseClient = (
 	context: AppLoadContext,
-	request: Request,
-): Promise<AuthUser | null> => {
-	const supabase = supabaseClient(context);
-	const userSession = await getSession(request.headers.get("Cookie"));
-	if (!userSession.has("access_token")) {
-		return null;
-	}
-	const {
-		data: { user },
-	} = await supabase.auth.getUser(userSession.get("access_token"));
-	if (!user) {
-		if (userSession.has("refresh_token")) {
-			const {
-				data: { session: supabaseSession },
-			} = await supabase.auth.refreshSession({
-				refresh_token: userSession.get("refresh_token"),
-			});
-			if (supabaseSession) {
-				userSession.set("access_token", supabaseSession.access_token);
-				userSession.set("refresh_token", supabaseSession.refresh_token);
-				await commitSession(userSession);
-			}
-		} else {
-			return null;
-		}
-		const {
-			data: { user: refreshedUser },
-		} = await supabase.auth.getUser(userSession.get("access_token"));
-		return refreshedUser;
-	}
-	return user;
-};
-
-export const logout = async (request: Request, redirectUrl: string) => {
-	const userSession = await getSession(request.headers.get("Cookie"));
-	return redirect(redirectUrl, {
-		headers: {
-			"Set-Cookie": await destroySession(userSession),
+	request: LoaderFunctionArgs["request"],
+	headers: Headers,
+) => {
+	const { env } = context.cloudflare;
+	const cookies = parse(request.headers.get("Cookie") || "");
+	return createServerClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
+		cookies: {
+			get(key) {
+				return cookies[key];
+			},
+			set(key, value, options) {
+				headers.append("Set-Cookie", serialize(key, value, options));
+			},
+			remove(key, options) {
+				headers.append("Set-Cookie", serialize(key, "", options));
+			},
 		},
 	});
 };
 
+export const getAuthUser = async (
+	context: AppLoadContext,
+	request: LoaderFunctionArgs["request"],
+	headers: Headers,
+): Promise<AuthUser | null> => {
+	const supabase = supabaseClient(context, request, headers);
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	return user;
+};
+
+export const logout = async (
+	context: AppLoadContext,
+	request: LoaderFunctionArgs["request"],
+	headers: Headers,
+	redirectUrl: string,
+) => {
+	const supabase = supabaseClient(context, request, headers);
+	await supabase.auth.signOut();
+	return redirect(redirectUrl, { headers });
+};
+
 export const getAdmin = async (
 	context: AppLoadContext,
-	request: Request,
+	request: LoaderFunctionArgs["request"],
+	headers: Headers,
 ): Promise<User | null> => {
-	const authUser = await getAuthUser(context, request);
+	const authUser = await getAuthUser(context, request, headers);
 	if (!authUser) {
 		return null;
 	}
@@ -81,9 +71,10 @@ export const getAdmin = async (
 
 export const getUser = async (
 	context: AppLoadContext,
-	request: Request,
+	request: LoaderFunctionArgs["request"],
+	headers: Headers,
 ): Promise<User | null> => {
-	const authUser = await getAuthUser(context, request);
+	const authUser = await getAuthUser(context, request, headers);
 	if (!authUser) {
 		return null;
 	}

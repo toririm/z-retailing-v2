@@ -19,6 +19,7 @@ export const loader = async ({
 	request,
 	params,
 }: LoaderFunctionArgs) => {
+	const headers = new Headers();
 	if (typeof params.year !== "string" || typeof params.month !== "string") {
 		return redirect("/user/history");
 	}
@@ -30,7 +31,7 @@ export const loader = async ({
 	if (month < 1 || month > 12) {
 		return redirect("/user/history");
 	}
-	const user = await getUser(context, request);
+	const user = await getUser(context, request, headers);
 	if (!user) {
 		return redirect("/login");
 	}

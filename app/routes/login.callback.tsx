@@ -1,36 +1,65 @@
 import { redirect } from "@remix-run/cloudflare";
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { Form, useNavigation, useSearchParams } from "@remix-run/react";
 import { badRequest } from "~/.server/request";
-import { commitSession, getSession } from "~/.server/session";
 import { supabaseClient } from "~/.server/supabase";
 
 // this route is for handling the callback from the email magic link
 
-export const loader = async ({ context, request }: LoaderFunctionArgs) => {
-	const url = new URL(request.url);
-	const token_hash = url.searchParams.get("token_hash");
+export const action = async ({ context, request }: LoaderFunctionArgs) => {
+	const form = await request.formData();
+	const token_hash = form.get("token_hash");
+	console.log(token_hash);
+	const headers = new Headers();
 	if (typeof token_hash !== "string") {
 		return badRequest({
 			message: "Invalid query. If you're not happy with it, try again.",
 		});
 	}
-	const {
-		data: { session: supabaseSession },
-		error,
-	} = await supabaseClient(context).auth.verifyOtp({
+	const { data, error } = await supabaseClient(
+		context,
+		request,
+		headers,
+	).auth.verifyOtp({
 		token_hash,
 		type: "email",
 	});
 	console.log(error);
-	if (!supabaseSession) {
-		return redirect("/user");
-	}
-	const userSession = await getSession(request.headers.get("Cookie"));
-	userSession.set("access_token", supabaseSession.access_token);
-	userSession.set("refresh_token", supabaseSession.refresh_token);
+	console.log(headers);
 	return redirect("/user", {
-		headers: {
-			"Set-Cookie": await commitSession(userSession),
-		},
+		headers: headers,
 	});
 };
+
+export default function CallbackWait() {
+	const [params, setParams] = useSearchParams();
+	const navigation = useNavigation();
+	const tokenHash = params.get("token_hash");
+	if (!tokenHash) {
+		return redirect("/login");
+	}
+	console.log(tokenHash);
+	return (
+		<div className="h-screen flex justify-center items-center">
+			<div className="card card-bordered bg-base-100 shadow-xl">
+				<div className="card-body items-center text-center">
+					<h2 className="card-title">ログインしますか？</h2>
+					<Form method="post">
+						<input type="hidden" name="token_hash" value={tokenHash} />
+						<button
+							type="submit"
+							className="btn btn-wide btn-info"
+							disabled={navigation.state !== "idle"}
+						>
+							{navigation.state !== "idle" ? (
+								<span className="loading loading-dots loading-md" />
+							) : (
+								"ログイン"
+							)}
+						</button>
+					</Form>
+				</div>
+			</div>
+		</div>
+	);
+}

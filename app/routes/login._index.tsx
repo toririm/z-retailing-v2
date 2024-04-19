@@ -11,6 +11,7 @@ export const meta = () => [
 ];
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
+	const headers = new Headers();
 	const form = await request.formData();
 	const email = form.get("email");
 	const accept = /^s\d{7}@u\.tsukuba\.ac\.jp$/;
@@ -28,10 +29,14 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 			errorMsg,
 		});
 	}
-	const { data, error } = await supabaseClient(context).auth.signInWithOtp({
+	const { data, error } = await supabaseClient(
+		context,
+		request,
+		headers,
+	).auth.signInWithOtp({
 		email,
 	});
-	return redirect("/login/wait", 303);
+	return redirect(`/login/verify?email=${email}`, 303);
 };
 
 export default function Login() {

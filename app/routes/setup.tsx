@@ -10,6 +10,7 @@ export const meta = () => [
 ];
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
+	const headers = new Headers();
 	const form = await request.formData();
 	const nickname = form.get("nickname");
 	if (typeof nickname !== "string") {
@@ -18,7 +19,7 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 			errorMsg: "フォームが正しく送信されませんでした",
 		});
 	}
-	const user = await getAuthUser(context, request);
+	const user = await getAuthUser(context, request, headers);
 	const prisma = prismaClient(context);
 	if (!user) {
 		return badRequest({

@@ -18,7 +18,8 @@ export const meta = () => [
 ];
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
-	const adminUserPromise = getAdmin(context, request);
+	const headers = new Headers();
+	const adminUserPromise = getAdmin(context, request, headers);
 	const prisma = prismaClient(context);
 	const itemsPromise = await prisma.item.findMany({
 		include: {
@@ -44,7 +45,8 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
-	const adminUser = await getAdmin(context, request);
+	const headers = new Headers();
+	const adminUser = await getAdmin(context, request, headers);
 	if (!adminUser) {
 		return redirect("/user");
 	}

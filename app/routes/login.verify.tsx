@@ -1,10 +1,10 @@
+import type { ActionFunctionArgs } from "@remix-run/cloudflare";
 import {
 	Form,
 	redirect,
 	useNavigation,
 	useSearchParams,
 } from "@remix-run/react";
-import type { ActionFunctionArgs } from "@remix-run/cloudflare";
 import { badRequest } from "~/.server/request";
 import { supabaseClient } from "~/.server/supabase";
 

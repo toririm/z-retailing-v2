@@ -11,7 +11,7 @@ interface Env {
 	SUPABASE_ANON_KEY: string;
 	DATABASE_URL_WITH_ACCELERATE: string;
 	TEAMS_WEBHOOK_URL: string;
-};
+}
 
 type Cloudflare = Omit<PlatformProxy<Env>, "dispose">;
 

@@ -1,5 +1,9 @@
 import type { User } from "@prisma/client";
-import { type AppLoadContext, redirect, type LoaderFunctionArgs } from "@remix-run/cloudflare";
+import {
+	type AppLoadContext,
+	type LoaderFunctionArgs,
+	redirect,
+} from "@remix-run/cloudflare";
 import { createServerClient, parse, serialize } from "@supabase/ssr";
 import { type User as AuthUser, createClient } from "@supabase/supabase-js";
 import { prismaClient } from "./prisma";

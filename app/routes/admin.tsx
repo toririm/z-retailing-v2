@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, redirect, json } from "@remix-run/cloudflare";
+import { type LoaderFunctionArgs, json, redirect } from "@remix-run/cloudflare";
 import { Link, Outlet } from "@remix-run/react";
 import { getAdmin } from "~/.server/supabase";
 

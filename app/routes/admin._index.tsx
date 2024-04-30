@@ -29,6 +29,12 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 					deletedAt: null,
 				},
 			},
+			owner: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
 		},
 		where: {
 			deletedAt: null,
@@ -76,17 +82,13 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 		data: {
 			name,
 			price: priceNum,
+			ownerId: adminUser.id, // 追加したユーザのIDを owner として登録する
 		},
 	});
 	const webhook = new teamsWebhook(context);
-	const card = createCard(
-		"新商品追加！",
-		`${name}（¥${price}）が追加されました！`,
-	);
-	const notifyPromise = webhook.sendCard(
-		`${name}（¥${price}）が追加されました！`,
-		card,
-	);
+	const message = `${name}（¥${price}）が追加されました！ by ${adminUser.name}`;
+	const card = createCard("新商品追加！", message);
+	const notifyPromise = webhook.sendCard(message, card);
 	try {
 		const [addResult, notifyResult] = await Promise.all([
 			prismaPromise,
@@ -127,6 +129,7 @@ export default function Admin() {
 							<th />
 							<th>商品名</th>
 							<th>価格</th>
+							<th>所有者</th>
 							<th>販売数</th>
 							<th>登録日時</th>
 							<th />
@@ -138,6 +141,7 @@ export default function Admin() {
 								<th>{index + 1}</th>
 								<td>{item.name}</td>
 								<td>&yen; {item.price}</td>
+								<td>{item?.owner?.name ?? "未登録"}</td>
 								<td>{item.purchases.length}</td>
 								<td>{dayjs(item.createdAt).tz().format("YYYY-MM-DD HH:mm")}</td>
 								<td>
@@ -191,6 +195,7 @@ export default function Admin() {
 									}
 								/>
 							</td>
+							<td />
 							<td />
 							<td />
 							<td>

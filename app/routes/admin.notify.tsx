@@ -11,6 +11,7 @@ export const action: ActionFunction = async ({
 	context,
 	request,
 }: ActionFunctionArgs) => {
+	// お知らせを送信する
 	const headers = new Headers();
 	const adminUser = await getAdmin(context, request, headers);
 	if (!adminUser) {

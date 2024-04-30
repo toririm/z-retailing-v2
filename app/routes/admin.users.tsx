@@ -3,7 +3,13 @@ import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { prismaClient } from "~/.server/prisma";
 import { getAdmin } from "~/.server/supabase";
 
+export const meta = () => [
+	{ title: "ユーザー管理 | Z物販" },
+	{ name: "description", content: "管理者ページです" },
+];
+
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
+	// ユーザ一覧を取得する
 	const headers = new Headers();
 	const adminUser = await getAdmin(context, request, headers);
 	if (!adminUser) {
@@ -13,11 +19,6 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 	const users = await prisma.user.findMany();
 	return { users };
 };
-
-export const meta = () => [
-	{ title: "ユーザー管理 | Z物販" },
-	{ name: "description", content: "管理者ページです" },
-];
 
 export default function AdminUsersRoute() {
 	const { users } = useLoaderData<typeof loader>();

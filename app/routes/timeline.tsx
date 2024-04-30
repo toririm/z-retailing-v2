@@ -9,12 +9,14 @@ export const meta = () => [
 ];
 
 export const loader = async ({ context }: LoaderFunctionArgs) => {
+	// 購入履歴を取得する
 	const prisma = prismaClient(context);
 	const purchases = await prisma.purchase.findMany({
 		where: {
 			deletedAt: null,
 		},
 		select: {
+			// このエンドポイントはパブリックなので、ユーザー名は表示しない
 			id: true,
 			createdAt: true,
 			item: {

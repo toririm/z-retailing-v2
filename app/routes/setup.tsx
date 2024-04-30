@@ -10,6 +10,7 @@ export const meta = () => [
 ];
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
+	// ニックネームを登録する
 	const headers = new Headers();
 	const form = await request.formData();
 	const nickname = form.get("nickname");

@@ -11,6 +11,7 @@ export const loader = async ({
 	params,
 	request,
 }: LoaderFunctionArgs) => {
+	// $userId のユーザーの購入履歴を取得する
 	const headers = new Headers();
 	const adminUser = await getAdmin(context, request, headers);
 	if (!adminUser) {

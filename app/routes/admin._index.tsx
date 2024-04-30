@@ -18,6 +18,7 @@ export const meta = () => [
 ];
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
+	// 商品一覧を取得する
 	const headers = new Headers();
 	const adminUserPromise = getAdmin(context, request, headers);
 	const prisma = prismaClient(context);
@@ -45,6 +46,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
+	// 商品の追加を行う
 	const headers = new Headers();
 	const adminUser = await getAdmin(context, request, headers);
 	if (!adminUser) {

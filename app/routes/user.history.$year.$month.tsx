@@ -19,6 +19,7 @@ export const loader = async ({
 	request,
 	params,
 }: LoaderFunctionArgs) => {
+	// $year年$month月の購入履歴を取得する
 	const headers = new Headers();
 	if (typeof params.year !== "string" || typeof params.month !== "string") {
 		return redirect("/user/history");

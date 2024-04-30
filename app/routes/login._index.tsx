@@ -11,10 +11,11 @@ export const meta = () => [
 ];
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
+	// ログインを行うメールアドレスを取得し、OTPをメールに送信する
 	const headers = new Headers();
 	const form = await request.formData();
 	const email = form.get("email");
-	const accept = /^s\d{7}@u\.tsukuba\.ac\.jp$/;
+	const accept = /^s\d{7}@u\.tsukuba\.ac\.jp$/; // 大学メールアドレスの正規表現
 	if (typeof email !== "string") {
 		const errorMsg = "フォームが正しく送信されませんでした";
 		return badRequest({

@@ -4,6 +4,7 @@ import { badRequest } from "~/.server/request";
 import { getAdmin } from "~/.server/supabase";
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
+	// 商品の削除を行う
 	const headers = new Headers();
 	const adminUser = await getAdmin(context, request, headers);
 	if (!adminUser) {

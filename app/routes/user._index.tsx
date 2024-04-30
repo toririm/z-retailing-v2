@@ -21,6 +21,7 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
+	// 商品一覧と購入履歴を取得する
 	const headers = new Headers();
 	const user = await getUser(context, request, headers);
 	if (!user) {

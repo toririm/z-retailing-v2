@@ -11,6 +11,7 @@ export const meta = () => [
 ];
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
+	// 購入履歴を取得する
 	const headers = new Headers();
 	const admin = getAdmin(context, request, headers);
 	if (!admin) {
@@ -33,7 +34,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 			user: {
 				select: {
 					id: true,
-					name: true,
+					name: true, // 管理者ページなのでユーザー名も表示する
 				},
 			},
 		},

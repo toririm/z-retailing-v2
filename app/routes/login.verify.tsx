@@ -9,6 +9,7 @@ import { badRequest } from "~/.server/request";
 import { supabaseClient } from "~/.server/supabase";
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
+	// メールアドレスとOTPを取得し、認証を行う
 	const headers = new Headers();
 	const form = await request.formData();
 	const email = form.get("email");

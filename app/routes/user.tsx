@@ -5,6 +5,7 @@ import { prismaClient } from "~/.server/prisma";
 import { getAuthUser } from "~/.server/supabase";
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
+	// header を返してやることで、refresh token を更新する
 	const headers = new Headers();
 	const authUser = await getAuthUser(context, request, headers);
 	if (!authUser) {

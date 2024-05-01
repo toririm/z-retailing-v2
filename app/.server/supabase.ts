@@ -5,9 +5,8 @@ import {
 	redirect,
 } from "@remix-run/cloudflare";
 import { createServerClient, parse, serialize } from "@supabase/ssr";
-import { type User as AuthUser, createClient } from "@supabase/supabase-js";
+import type { User as AuthUser } from "@supabase/supabase-js";
 import { prismaClient } from "./prisma";
-import { commitSession, destroySession, getSession } from "./session";
 
 export const supabaseClient = (
 	context: AppLoadContext,

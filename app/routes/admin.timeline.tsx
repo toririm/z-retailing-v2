@@ -124,10 +124,12 @@ export default function Timeline() {
 				<table className="table table-zebra">
 					<thead className="sticky top-0 bg-base-100">
 						<tr>
+							<th>販売数</th>
 							<th>日時</th>
 							<th>内容</th>
 						</tr>
 						<tr>
+							<th>{filteredPurchases.length}</th>
 							<th>
 								<select
 									className="select select-bordered select-xs w-full max-w-xs"
@@ -182,10 +184,11 @@ export default function Timeline() {
 						</tr>
 					</thead>
 					<tbody>
-						{timeline.map((event) =>
+						{timeline.map((event, index) =>
 							// biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
 							"type" in event ? (
 								<tr key={`${event.item}-${event.type}`}>
+									<th />
 									<td>{dayjs(event.createdAt).tz().format("M/D H:mm")}</td>
 									<td>
 										{event.type === "create"
@@ -195,6 +198,12 @@ export default function Timeline() {
 								</tr>
 							) : (
 								<tr key={event.id}>
+									<th>
+										{filteredPurchases.length -
+											index +
+											timeline.slice(0, index).filter((e) => "type" in e)
+												.length}
+									</th>
 									<td>{dayjs(event.createdAt).tz().format("M/D H:mm")}</td>
 									<td>
 										<Link

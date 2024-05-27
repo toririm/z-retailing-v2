@@ -188,12 +188,12 @@ export default function Timeline() {
 							// biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
 							"type" in event ? (
 								<tr key={`${event.item}-${event.type}`}>
-									<th />
+									<th>{event.type === "create" ? "🐣" : "💀"}</th>
 									<td>{dayjs(event.createdAt).tz().format("M/D H:mm")}</td>
 									<td>
 										{event.type === "create"
-											? `🐣 ${event.item.name} （¥${event.item.price}）が追加されました！`
-											: `💀 ${event.item.name} （¥${event.item.price}）が削除されました`}
+											? `${event.item.name} （¥${event.item.price}）が追加されました！`
+											: `${event.item.name} （¥${event.item.price}）が削除されました`}
 									</td>
 								</tr>
 							) : (

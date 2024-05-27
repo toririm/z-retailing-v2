@@ -48,6 +48,8 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 		return redirect("/user");
 	}
 	console.log(items);
+	// 登録日の降順に並び替える
+	items.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 	return { items };
 };
 

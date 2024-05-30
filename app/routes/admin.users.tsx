@@ -16,8 +16,11 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 		return redirect("/user");
 	}
 	const prisma = prismaClient(context);
-	const users = await prisma.user.findMany();
-	users.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+	const users = await prisma.user.findMany({
+		orderBy: {
+			createdAt: "asc",
+		},
+	});
 	return { users };
 };
 
@@ -33,7 +36,7 @@ export default function AdminUsersRoute() {
 								to={`/admin/users/${user.id}`}
 								className={({ isActive }) => (isActive ? "active" : "")}
 							>
-								<span className="font-bold">{index}</span>
+								<span className="font-bold">{index + 1}</span>
 								<span>
 									{user.name} {user.admin && "📢"}
 								</span>

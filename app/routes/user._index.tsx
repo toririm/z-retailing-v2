@@ -58,18 +58,30 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 			deletedAt: null,
 		},
 	});
+	// 匿名ユーザー用のユーザー一覧を取得
+	const usersPromise = prisma.user.findMany({
+		orderBy: {
+			createdAt: "asc",
+		},
+		select: {
+			id: true,
+		},
+	});
 	// ここでまとめてawaitする
-	const [items, purchases] = await Promise.all([
+	const [items, purchases, users] = await Promise.all([
 		itemsPromise,
 		purchasesPromise,
+		usersPromise,
 	]);
+	const anonNames = anonUserNames();
+	const anonName = anonNames[users.map((u) => u.id).indexOf(user.id)];
 	let total = 0;
 	for (const purchase of purchases) {
 		total += purchase.item.price;
 	}
 	console.log({ total, items, purchases });
 	const thisMonth = dayjs.tz().month() + 1;
-	return { user, thisMonth, total, items };
+	return { user, thisMonth, total, items, anonName };
 };
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
@@ -83,10 +95,12 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 	const itemId = form.get("itemId");
 	const itemName = form.get("itemName");
 	const itemPrice = form.get("itemPrice");
+	const anonName = form.get("anonName");
 	if (
 		typeof itemId !== "string" ||
 		typeof itemName !== "string" ||
-		typeof itemPrice !== "string"
+		typeof itemPrice !== "string" ||
+		typeof anonName !== "string"
 	) {
 		return badRequest({
 			itemId,
@@ -101,8 +115,6 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 			itemId,
 		},
 	});
-	const anonNames = anonUserNames();
-	const anonName = anonNames[Math.floor(Math.random() * anonNames.length)];
 	const webhook = new teamsWebhook(context);
 	const webhookMesssage = `${anonName}が${itemName}（¥${itemPrice}）を購入しました！`;
 	const card = createCard("購入通知", webhookMesssage);
@@ -129,7 +141,7 @@ export default function Index() {
 	if (!loaderData) {
 		return <></>;
 	}
-	const { user, thisMonth, total, items } = loaderData;
+	const { user, thisMonth, total, items, anonName } = loaderData;
 	const actionData = useActionData<typeof action>();
 	useEffect(() => {
 		if (actionData?.success) {
@@ -198,6 +210,7 @@ export default function Index() {
 									<input type="hidden" name="itemId" value={item.id} />
 									<input type="hidden" name="itemName" value={item.name} />
 									<input type="hidden" name="itemPrice" value={item.price} />
+									<input type="hidden" name="anonName" value={anonName} />
 									<button
 										className="btn btn-info"
 										type="submit"

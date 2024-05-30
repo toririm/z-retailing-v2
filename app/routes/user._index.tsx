@@ -12,6 +12,7 @@ import {
 } from "@remix-run/react";
 import { useEffect } from "react";
 import { modal } from "~/.client/modal";
+import { anonUserNames } from "~/.server/anon";
 import { prismaClient } from "~/.server/prisma";
 import { badRequest } from "~/.server/request";
 import { getUser } from "~/.server/supabase";
@@ -72,6 +73,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
+	// 商品を購入する
 	const headers = new Headers();
 	const user = await getUser(context, request, headers);
 	if (!user) {
@@ -99,8 +101,10 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 			itemId,
 		},
 	});
+	const anonNames = anonUserNames();
+	const anonName = anonNames[Math.floor(Math.random() * anonNames.length)];
 	const webhook = new teamsWebhook(context);
-	const webhookMesssage = `誰かが${itemName}（¥${itemPrice}）を購入しました！`;
+	const webhookMesssage = `${anonName}が${itemName}（¥${itemPrice}）を購入しました！`;
 	const card = createCard("購入通知", webhookMesssage);
 	const webhookPromise = webhook.sendCard(webhookMesssage, card);
 	try {

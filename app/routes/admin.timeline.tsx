@@ -123,19 +123,19 @@ export default function Timeline() {
 		.reduce((a, b) => a + b, 0);
 	return (
 		<>
-			<div className="m-5 overflow-y-scroll h-[70svh]">
-				<div className="w-full flex items-center justify-center mt-4 mb-2">
-					<div className="card card-bordered w-64 bg-base-100 shadow-xl">
-						<div className="stat card-body flex items-center justify-center">
-							<h2 className="font-bold">表示条件での総利用料金</h2>
-							<p className="stat-value">&yen; {sales}</p>
-							<div className="stat-desc flex justify-between w-full">
-								<span />
-								<span>{dayjs.tz().format("YYYY/M/D H:mm")}</span>
-							</div>
+			<div className="w-full flex items-center justify-center mt-4 mb-2">
+				<div className="card card-bordered w-64 bg-base-100 shadow-xl">
+					<div className="stat card-body flex items-center justify-center">
+						<h2 className="font-bold">表示条件での総利用料金</h2>
+						<p className="stat-value">&yen; {sales}</p>
+						<div className="stat-desc flex justify-between w-full">
+							<span />
+							<span>{dayjs.tz().format("YYYY/M/D H:mm")}</span>
 						</div>
 					</div>
 				</div>
+			</div>
+			<div className="m-5 overflow-y-scroll h-[70svh]">
 				<table className="table table-zebra">
 					<thead className="sticky top-0 bg-base-100">
 						<tr>

@@ -17,6 +17,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 	}
 	const prisma = prismaClient(context);
 	const users = await prisma.user.findMany();
+	users.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 	return { users };
 };
 
@@ -25,14 +26,17 @@ export default function AdminUsersRoute() {
 	return (
 		<div className="overflow-x-auto p-4 pl-8">
 			<div className="flex space-x-8">
-				<ul className="menu bg-base-200 w-56 rounded-box flex-nowrap overflow-y-scroll h-[70svh]">
-					{users.map((user) => (
+				<ul className="menu bg-base-200 w-60 rounded-box flex-nowrap overflow-y-scroll h-[70svh]">
+					{users.map((user, index) => (
 						<li key={user.id}>
 							<NavLink
 								to={`/admin/users/${user.id}`}
 								className={({ isActive }) => (isActive ? "active" : "")}
 							>
-								{user.name} {user.admin && "📢"}
+								<span className="font-bold">{index}</span>
+								<span>
+									{user.name} {user.admin && "📢"}
+								</span>
 							</NavLink>
 						</li>
 					))}

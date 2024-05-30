@@ -4,7 +4,12 @@ import {
 	type MetaFunction,
 	redirect,
 } from "@remix-run/cloudflare";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import {
+	Form,
+	useActionData,
+	useLoaderData,
+	useNavigation,
+} from "@remix-run/react";
 import { useEffect } from "react";
 import { modal } from "~/.client/modal";
 import { prismaClient } from "~/.server/prisma";
@@ -129,6 +134,14 @@ export default function Index() {
 			modal("modal-error").showModal();
 		}
 	}, [actionData]);
+	const navigation = useNavigation();
+	useEffect(() => {
+		if (navigation.state === "submitting") {
+			modal("modal-loading").showModal();
+		} else {
+			modal("modal-loading").close();
+		}
+	}, [navigation.state]);
 	const dayjs = dayjsJP();
 	return (
 		<>
@@ -234,6 +247,14 @@ export default function Index() {
 					<form method="dialog" className="modal-backdrop">
 						<button type="submit">close</button>
 					</form>
+				</dialog>
+				<dialog className="modal" id="modal-loading">
+					<div className="modal-box">
+						<div className="stat card-body flex items-center justify-center">
+							<span className="loading loading-ring loading-lg" />
+							<h3 className="font-bold text-lg">購入中...</h3>
+						</div>
+					</div>
 				</dialog>
 			</div>
 		</>

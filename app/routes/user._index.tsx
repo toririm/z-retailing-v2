@@ -167,7 +167,9 @@ export default function Index() {
 						<h2 className="font-bold">{thisMonth}月の利用料金</h2>
 						<p className="stat-value">&yen; {total}</p>
 						<div className="stat-desc flex justify-between w-full">
-							<span>{user.name}さん</span>
+							<span>
+								{user.name}さん（{anonName}）
+							</span>
 							<span>{dayjs.tz().format("YYYY/M/D H:mm")}</span>
 						</div>
 					</div>

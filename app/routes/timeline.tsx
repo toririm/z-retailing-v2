@@ -12,7 +12,10 @@ export const meta = () => [
 export const loader = async ({ context }: LoaderFunctionArgs) => {
 	// 購入履歴を取得する
 	const prisma = prismaClient(context);
-	const purchases = await prisma.purchase.findMany({
+	const purchasesPromise = prisma.purchase.findMany({
+		orderBy: {
+			createdAt: "desc",
+		},
 		where: {
 			deletedAt: null,
 		},
@@ -33,9 +36,20 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
 			},
 		},
 	});
-	const users = purchases
-		.map((purchase) => purchase.user.id)
-		.filter((id, index, array) => array.indexOf(id) === index);
+	// 匿名ユーザーネーム用のユーザーを取得する
+	const usersPromise = prisma.user.findMany({
+		orderBy: {
+			createdAt: "asc",
+		},
+		select: {
+			id: true,
+		},
+	});
+	const [purchases, users] = await Promise.all([
+		purchasesPromise,
+		usersPromise,
+	]);
+	// 匿名ユーザーネームを取得する
 	const usernames = anonUserNames().slice(0, users.length);
 	type PurchaseWithUsername = {
 		id: string;
@@ -48,6 +62,7 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
 			name: string;
 		};
 	};
+	// 匿名ユーザーネームを付与する
 	const purchasesWithUsernames: PurchaseWithUsername[] = purchases.map(
 		(purchase) => {
 			const { id, createdAt, item } = purchase;
@@ -56,13 +71,12 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
 				createdAt,
 				item,
 				user: {
-					name: usernames[users.indexOf(purchase.user.id)],
+					name: usernames[users.map((u) => u.id).indexOf(purchase.user.id)],
 				},
 			};
 		},
 	);
-	console.log(purchasesWithUsernames);
-	return { purchases: purchasesWithUsernames.reverse() };
+	return { purchases: purchasesWithUsernames };
 };
 
 export default function Timeline() {
@@ -83,6 +97,7 @@ export default function Timeline() {
 				</div>
 			</nav>
 			<div className="m-5 overflow-y-scroll h-[85svh]">
+				<p>匿名ユーザーネームは毎月シャッフルされます</p>
 				<table className="table table-zebra">
 					<thead className="sticky top-0 bg-base-100">
 						<tr>

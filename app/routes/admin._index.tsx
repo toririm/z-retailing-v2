@@ -23,6 +23,9 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 	const adminUserPromise = getAdmin(context, request, headers);
 	const prisma = prismaClient(context);
 	const itemsPromise = await prisma.item.findMany({
+		orderBy: {
+			createdAt: "asc",
+		},
 		include: {
 			purchases: {
 				where: {
@@ -48,8 +51,6 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 		return redirect("/user");
 	}
 	console.log(items);
-	// 登録日の降順に並び替える
-	items.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 	return { items };
 };
 

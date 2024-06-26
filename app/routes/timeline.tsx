@@ -3,6 +3,7 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { anonUserNames } from "~/.server/anon";
 import { prismaClient } from "~/.server/prisma";
+import { getMonths } from "~/utils/date";
 import { dayjsJP } from "~/utils/dayjs";
 
 export const meta = () => [
@@ -85,22 +86,6 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
 	);
 	console.log(purchasesWithUsernames);
 	return { purchases: purchasesWithUsernames };
-};
-
-const getMonths = (oldest: Date, newest: Date) => {
-	const dayjs = dayjsJP();
-	const oldestDate = dayjs(oldest).tz().startOf("month");
-	const newestDateNextMonth = dayjs(newest)
-		.tz()
-		.startOf("month")
-		.add(1, "month");
-	const months = [];
-	let current = oldestDate;
-	while (current.isBefore(newestDateNextMonth)) {
-		months.push(current);
-		current = current.add(1, "month");
-	}
-	return months;
 };
 
 export default function Timeline() {

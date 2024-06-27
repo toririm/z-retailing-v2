@@ -4,7 +4,7 @@ import { prismaClient } from "~/.server/prisma";
 import { getAdmin } from "~/.server/supabase";
 
 export const meta = () => [
-	{ title: "ユーザー管理 | Z物販" },
+	{ title: "ユーザー管理 | Y物販" },
 	{ name: "description", content: "管理者ページです" },
 ];
 

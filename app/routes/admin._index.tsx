@@ -13,7 +13,7 @@ import { createCard, teamsWebhook } from "~/.server/teams-webhook";
 import { dayjsJP } from "~/utils/dayjs";
 
 export const meta = () => [
-	{ title: "管理者ページ | Z物販" },
+	{ title: "管理者ページ | Y物販" },
 	{ name: "description", content: "管理者ページです" },
 ];
 
@@ -88,15 +88,16 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 			ownerId: adminUser.id, // 追加したユーザのIDを owner として登録する
 		},
 	});
-	const webhook = new teamsWebhook(context);
-	const message = `${name}（¥${price}）が追加されました！ by ${adminUser.name}`;
-	const card = createCard("新商品追加！", message);
-	const notifyPromise = webhook.sendCard(message, card);
+	// const webhook = new teamsWebhook(context);
+	// const message = `${name}（¥${price}）が追加されました！ by ${adminUser.name}`;
+	// const card = createCard("新商品追加！", message);
+	// const notifyPromise = webhook.sendCard(message, card);
 	try {
-		const [addResult, notifyResult] = await Promise.all([
-			prismaPromise,
-			notifyPromise,
-		]);
+		// const [addResult, notifyResult] = await Promise.all([
+		// 	prismaPromise,
+		// 	notifyPromise,
+		// ]);
+		const addResult = await prismaPromise;
 		return {
 			errorMsg: null,
 		};

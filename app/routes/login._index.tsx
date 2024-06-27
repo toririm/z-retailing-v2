@@ -6,8 +6,8 @@ import { badRequest } from "~/.server/request";
 import { supabaseClient } from "~/.server/supabase";
 
 export const meta = () => [
-	{ title: "ログイン | Z物販" },
-	{ name: "description", content: "Z物販のログインページ" },
+	{ title: "ログイン | Y物販" },
+	{ name: "description", content: "Y物販のログインページ" },
 ];
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
@@ -15,7 +15,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 	const headers = new Headers();
 	const form = await request.formData();
 	const email = form.get("email");
-	const accept = /^s\d{7}@u\.tsukuba\.ac\.jp$/; // 大学メールアドレスの正規表現
+	// const accept = /^s\d{7}@u\.tsukuba\.ac\.jp$/; // 大学メールアドレスの正規表現
 	if (typeof email !== "string") {
 		const errorMsg = "フォームが正しく送信されませんでした";
 		return badRequest({
@@ -23,13 +23,13 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 			errorMsg,
 		});
 	}
-	if (!accept.test(email)) {
-		const errorMsg = "メールアドレスの形式が正しくありません";
-		return badRequest({
-			email,
-			errorMsg,
-		});
-	}
+	// if (!accept.test(email)) {
+	// 	const errorMsg = "メールアドレスの形式が正しくありません";
+	// 	return badRequest({
+	// 		email,
+	// 		errorMsg,
+	// 	});
+	// }
 	const { data, error } = await supabaseClient(
 		context,
 		request,
@@ -49,7 +49,7 @@ export default function Login() {
 		<div className="h-screen flex justify-center items-center">
 			<div className="card card-bordered bg-base-100 shadow-xl">
 				<Form method="post" className="card-body items-center text-center">
-					<h2 className="card-title">Z物販 ログイン</h2>
+					<h2 className="card-title">Y物販 ログイン</h2>
 					<label className="from-control">
 						<div className="label">
 							<span className="label-text">大学メールアドレス</span>

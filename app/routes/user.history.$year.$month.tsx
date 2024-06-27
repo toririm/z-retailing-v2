@@ -10,7 +10,7 @@ import { getUser } from "~/.server/supabase";
 import { dayjsJP } from "~/utils/dayjs";
 
 export const meta: MetaFunction = ({ params }) => [
-	{ title: `購入履歴 - ${params.year}年${params.month}月 | Z物販` },
+	{ title: `購入履歴 - ${params.year}年${params.month}月 | Y物販` },
 	{ name: "description", content: "購入履歴を提供します" },
 ];
 

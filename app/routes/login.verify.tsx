@@ -42,7 +42,7 @@ export default function LoginVerify() {
 		<div className="h-screen flex justify-center items-center">
 			<div className="card card-bordered bg-base-100 shadow-xl">
 				<Form method="post" className="card-body items-center text-center">
-					<h2 className="card-title">Z物販 ログイン</h2>
+					<h2 className="card-title">Y物販 ログイン</h2>
 					<label className="from-control">
 						<div className="label">
 							<span className="label-text">大学メールアドレス</span>

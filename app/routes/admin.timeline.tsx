@@ -12,7 +12,7 @@ import { getMonths } from "~/utils/date";
 import { dayjsJP } from "~/utils/dayjs";
 
 export const meta = () => [
-	{ title: "管理者タイムライン | Z物販" },
+	{ title: "管理者タイムライン | Y物販" },
 	{ name: "description", content: "最新の購入履歴が閲覧できます" },
 ];
 

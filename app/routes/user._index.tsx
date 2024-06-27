@@ -21,8 +21,8 @@ import { dayjsJP } from "~/utils/dayjs";
 
 export const meta: MetaFunction = () => {
 	return [
-		{ title: "ホーム | Z物販" },
-		{ name: "description", content: "Z物販の購入画面です" },
+		{ title: "ホーム | Y物販" },
+		{ name: "description", content: "Y物販の購入画面です" },
 	];
 };
 
@@ -115,12 +115,13 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 			itemId,
 		},
 	});
-	const webhook = new teamsWebhook(context);
-	const webhookMesssage = `${anonName}が${itemName}（¥${itemPrice}）を購入しました！`;
-	const card = createCard("購入通知", webhookMesssage);
-	const webhookPromise = webhook.sendCard(webhookMesssage, card);
+	// const webhook = new teamsWebhook(context);
+	// const webhookMesssage = `${anonName}が${itemName}（¥${itemPrice}）を購入しました！`;
+	// const card = createCard("購入通知", webhookMesssage);
+	// const webhookPromise = webhook.sendCard(webhookMesssage, card);
 	try {
-		await Promise.all([purchasePrimise, webhookPromise]);
+		// await Promise.all([purchasePrimise, webhookPromise]);
+		await purchasePrimise;
 	} catch (e) {
 		console.log(e);
 		return badRequest({

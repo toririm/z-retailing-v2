@@ -5,7 +5,7 @@ import { badRequest } from "~/.server/request";
 import { getAuthUser } from "~/.server/supabase";
 
 export const meta = () => [
-	{ title: "ニックネームを入れよう！ | Z物販" },
+	{ title: "ニックネームを入れよう！ | Y物販" },
 	{ name: "description", content: "ニックネームを入れよう！" },
 ];
 
@@ -40,6 +40,7 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 				authId: user.id,
 				name: nickname,
 				email: user.email,
+				admin: true,
 			},
 		});
 	} catch (e) {

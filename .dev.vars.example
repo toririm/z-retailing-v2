@@ -1,0 +1,4 @@
+SUPABASE_URL="https://..."
+SUPABASE_ANON_KEY="..."
+DATABASE_URL_WITH_ACCELERATE="prisma://accelerate.prisma-data.net/?api_key=..."
+DATABASE_URL="postgresql://postgres:..."

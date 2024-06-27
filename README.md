@@ -1,55 +1,90 @@
-# Modified Template
+# Z-retailing
 
-- Remove eslint, add Biome
-- add Tailwind
+## Prerequisites
 
-Original Template README below:
+- Cloudflare Pages
+- Supabase
+- Prisma Accelerate
+- Bun
+- Remix
 
-# Welcome to Remix + Vite!
+## Set database timezone
 
-📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/future/vite) for details on supported features.
-
-## Typegen
-
-Generate types for your Cloudflare bindings in `wrangler.toml`:
-
-```sh
-npm run typegen
+```sql
+alter database postgres
+set timezone to 'Asia/Tokyo';
 ```
 
-You will need to rerun typegen whenever you make changes to `wrangler.toml`.
+## ページ遷移
 
-## Development
+```mermaid
+graph TD;
 
-Run the Vite dev server:
+  %% root
+  / -->|redirect| USER
 
-```sh
-npm run dev
+  %% login
+  subgraph LOGIN
+    %% /user -->|if not logged in| /login
+    /login -->|email submitted| mail([OTP email])
+    mail([OTP email]) --> |enter OTP| /login/verify
+  end
+  
+  LOGIN -->|login| USER
+
+  %% user
+  subgraph USER
+    /user <-->|link| /user/history/$year/$month
+    /user/history/$year/$month -->|other date| /user/history/$year/$month
+    /user -->|if not registered| /setup
+    %% /setup -->|nickname submitted| /user
+  end
+  
+  USER <-->|link| /timeline
+  
+  USER <-->|link if admin| ADMIN
+
+  %% admin
+  subgraph ADMIN
+    /admin <-->|link| /admin/users/$userId
+    /admin/users/$userId -->|other user| /admin/users/$userId
+    /admin <-->|link| /admin/timeline
+  end
+
+  %% independant
+  /coffee
 ```
 
-To run Wrangler:
+## ER図
+```mermaid
+erDiagram 
+    USER {
+        uuid id PK
+        uuid authId
+        text name
+        text email
+        bool admin
+        timestamptz createdAt
+    }
 
-```sh
-npm run build
-npm run start
+    ITEM {
+        uuid id PK
+        text name
+        int4 price
+        timestamptz createdAt
+        timestamptz deletedAt
+        uuid ownerId FK
+    }
+
+    PURCHASE {
+        uuid id PK
+        uuid userId FK
+        uuid itemId FK
+        timestamptz createdAt
+        timestamptz deletedAt
+    }
+
+    USER ||--o{ ITEM : "owns"
+    USER ||--o{ PURCHASE : "makes"
+    ITEM ||--o{ PURCHASE : "is part of"
 ```
-
-## Deployment
-
-> [!WARNING]  
-> Cloudflare does _not_ use `wrangler.toml` to configure deployment bindings.
-> You **MUST** [configure deployment bindings manually in the Cloudflare dashboard][bindings].
-
-First, build your app for production:
-
-```sh
-npm run build
-```
-
-Then, deploy your app to Cloudflare Pages:
-
-```sh
-npm run deploy
-```
-
-[bindings]: https://developers.cloudflare.com/pages/functions/bindings/

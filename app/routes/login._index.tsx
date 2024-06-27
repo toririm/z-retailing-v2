@@ -43,8 +43,8 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 export default function Login() {
 	const actionData = useActionData<typeof action>();
 	const navigation = useNavigation();
-	const [fullEmail, setFullEmail] = useState(false);
-	const [emailnum, setEmailnum] = useState("");
+	// const [fullEmail, setFullEmail] = useState(false);
+	const [email, setEmail] = useState("");
 	return (
 		<div className="h-screen flex justify-center items-center">
 			<div className="card card-bordered bg-base-100 shadow-xl">
@@ -52,9 +52,9 @@ export default function Login() {
 					<h2 className="card-title">Y物販 ログイン</h2>
 					<label className="from-control">
 						<div className="label">
-							<span className="label-text">大学メールアドレス</span>
+							<span className="label-text">メールアドレス</span>
 						</div>
-						<div hidden={fullEmail}>
+						{/* <div hidden={fullEmail}>
 							<div className="join">
 								<input
 									type="text"
@@ -69,23 +69,17 @@ export default function Login() {
 									@u.tsukuba.ac.jp
 								</div>
 							</div>
-						</div>
+						</div> */}
 						<input
 							name="email"
 							type="email"
-							placeholder="s9999999@u.tsukuba.ac.jp"
+							placeholder="hoge@example.com"
 							className={`input input-bordered ${
 								actionData?.errorMsg ? "input-error" : ""
 							}`}
-							value={
-								fullEmail
-									? actionData?.email
-									: emailnum !== ""
-										? `${emailnum}@u.tsukuba.ac.jp`
-										: ""
-							}
+							onChange={(e) => setEmail(e.target.value)}
+							value={actionData?.email || email}
 							autoComplete="off"
-							hidden={!fullEmail}
 						/>
 						<div className="label">
 							{actionData?.errorMsg ? (
@@ -94,7 +88,7 @@ export default function Login() {
 								</span>
 							) : null}
 						</div>
-						<div className="flex justify-center">
+						{/* <div className="flex justify-center">
 							<div className="label w-52">
 								<input
 									type="checkbox"
@@ -105,7 +99,7 @@ export default function Login() {
 									メールアドレス全体を入力する
 								</span>
 							</div>
-						</div>
+						</div> */}
 					</label>
 					<div className="card-actions">
 						<button

@@ -45,7 +45,7 @@ export default function LoginVerify() {
 					<h2 className="card-title">Y物販 ログイン</h2>
 					<label className="from-control">
 						<div className="label">
-							<span className="label-text">大学メールアドレス</span>
+							<span className="label-text">メールアドレス</span>
 						</div>
 						<input type="hidden" name="email" value={email} />
 						<input

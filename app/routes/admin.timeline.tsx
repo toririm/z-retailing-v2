@@ -1,6 +1,11 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { Link, redirect, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
+import {
+	filterPurchasesUserId,
+	getItemsFromPurchases,
+	getUsersFromPurchasesUserId,
+} from "~/.client/timeline";
 import { prismaClient } from "~/.server/prisma";
 import { getAdmin } from "~/.server/supabase";
 import { getMonths } from "~/utils/date";
@@ -55,41 +60,14 @@ export default function Timeline() {
 	const oldest = new Date(purchases[purchases.length - 1].createdAt);
 	const newest = new Date(purchases[0].createdAt);
 	const months = getMonths(oldest, newest);
-	const users = purchases
-		.filter(
-			(purchase, index) =>
-				purchases.map((pur) => pur.user.id).indexOf(purchase.user.id) === index,
-		)
-		.map((pur) => pur.user);
-	const items = purchases
-		.filter(
-			(purchase, index) =>
-				purchases.map((pur) => pur.item.id).indexOf(purchase.item.id) === index,
-		)
-		.map((pur) => pur.item)
-		.sort((a, b) => a.name.localeCompare(b.name, "ja"));
-	const filteredPurchases = purchases
-		.filter((pur) => {
-			if (filterDate === "all") {
-				return true;
-			}
-			const month = dayjs(filterDate).tz().startOf("month");
-			const next = month.add(1, "month");
-			const createdAt = new Date(pur.createdAt);
-			return month.toDate() <= createdAt && createdAt < next.toDate();
-		})
-		.filter((pur) => {
-			if (filterUser === "all") {
-				return true;
-			}
-			return pur.user.id === filterUser;
-		})
-		.filter((pur) => {
-			if (filterItem === "all") {
-				return true;
-			}
-			return pur.item.id === filterItem;
-		});
+	const users = getUsersFromPurchasesUserId(purchases);
+	const items = getItemsFromPurchases(purchases);
+	const filteredPurchases = filterPurchasesUserId(
+		purchases,
+		filterDate,
+		filterUser,
+		filterItem,
+	);
 	const itemMutationInfo = items
 		.flatMap((item) =>
 			item.deletedAt

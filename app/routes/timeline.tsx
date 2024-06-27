@@ -1,8 +1,16 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { Link, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
+import {
+	type PurchaseWithUserItem,
+	filterPurchasesUserName,
+	getItemMutationInfo,
+	getItemsFromPurchases,
+	getUsersFromPurchasesName,
+} from "~/.client/timeline";
 import { anonUserNames } from "~/.server/anon";
 import { prismaClient } from "~/.server/prisma";
+import { getMonths } from "~/utils/date";
 import { dayjsJP } from "~/utils/dayjs";
 
 export const meta = () => [
@@ -55,22 +63,8 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
 	]);
 	// 匿名ユーザーネームを取得する
 	const usernames = anonUserNames().slice(0, users.length);
-	type PurchaseWithUsername = {
-		id: string;
-		createdAt: Date;
-		item: {
-			id: string;
-			name: string;
-			price: number;
-			createdAt: Date;
-			deletedAt: Date | null;
-		};
-		user: {
-			name: string;
-		};
-	};
 	// 匿名ユーザーネームを付与する
-	const purchasesWithUsernames: PurchaseWithUsername[] = purchases.map(
+	const purchasesWithUsernames: PurchaseWithUserItem[] = purchases.map(
 		(purchase) => {
 			const { id, createdAt, item } = purchase;
 			return {
@@ -87,22 +81,6 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
 	return { purchases: purchasesWithUsernames };
 };
 
-const getMonths = (oldest: Date, newest: Date) => {
-	const dayjs = dayjsJP();
-	const oldestDate = dayjs(oldest).tz().startOf("month");
-	const newestDateNextMonth = dayjs(newest)
-		.tz()
-		.startOf("month")
-		.add(1, "month");
-	const months = [];
-	let current = oldestDate;
-	while (current.isBefore(newestDateNextMonth)) {
-		months.push(current);
-		current = current.add(1, "month");
-	}
-	return months;
-};
-
 export default function Timeline() {
 	const { purchases } = useLoaderData<typeof loader>();
 	const dayjs = dayjsJP();
@@ -112,52 +90,15 @@ export default function Timeline() {
 	const oldest = new Date(purchases[purchases.length - 1].createdAt);
 	const newest = new Date(purchases[0].createdAt);
 	const months = getMonths(oldest, newest);
-	const users = purchases
-		.filter(
-			(purchase, index) =>
-				purchases.map((pur) => pur.user.name).indexOf(purchase.user.name) ===
-				index,
-		)
-		.map((pur) => pur.user);
-	const items = purchases
-		.filter(
-			(purchase, index) =>
-				purchases.map((pur) => pur.item.id).indexOf(purchase.item.id) === index,
-		)
-		.map((pur) => pur.item)
-		.sort((a, b) => a.name.localeCompare(b.name, "ja"));
-	const filteredPurchases = purchases
-		.filter((pur) => {
-			if (filterDate === "all") {
-				return true;
-			}
-			const month = dayjs(filterDate).tz().startOf("month");
-			const next = month.add(1, "month");
-			const createdAt = new Date(pur.createdAt);
-			return month.toDate() <= createdAt && createdAt < next.toDate();
-		})
-		.filter((pur) => {
-			if (filterUser === "all") {
-				return true;
-			}
-			return pur.user.name === filterUser;
-		})
-		.filter((pur) => {
-			if (filterItem === "all") {
-				return true;
-			}
-			return pur.item.id === filterItem;
-		});
-	const itemMutationInfo = items
-		.flatMap((item) =>
-			item.deletedAt
-				? [
-						{ createdAt: item.createdAt, type: "create", item },
-						{ createdAt: item.deletedAt, type: "delete", item },
-					]
-				: [{ createdAt: item.createdAt, type: "create", item }],
-		)
-		.filter((info) => info.item.id === filterItem);
+	const users = getUsersFromPurchasesName(purchases);
+	const items = getItemsFromPurchases(purchases);
+	const filteredPurchases = filterPurchasesUserName(
+		purchases,
+		filterDate,
+		filterUser,
+		filterItem,
+	);
+	const itemMutationInfo = getItemMutationInfo(items, filterItem);
 	const timeline = [...filteredPurchases, ...itemMutationInfo].sort(
 		(a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
 	);

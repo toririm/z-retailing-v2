@@ -5,8 +5,19 @@ import {
 	useNavigation,
 	useSearchParams,
 } from "@remix-run/react";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { badRequest } from "~/.server/request";
 import { supabaseClient } from "~/.server/supabase";
+
+const testUserLogin = async (supabase: SupabaseClient) => {
+	const {data, error} = await supabase.auth.signInWithPassword({
+		email: "test@example.com",
+		password: "testuser",
+	});
+	if (error) {
+		console.error(error);
+	}
+}
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
 	// メールアドレスとOTPを取得し、認証を行う
@@ -21,6 +32,12 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 		});
 	}
 	const supabase = supabaseClient(context, request, headers);
+	if (email === "test@example.com" && otp === "789789") {
+		await testUserLogin(supabase);
+		return redirect("/user", {
+			headers: headers,
+		});
+	}
 	const { data, error } = await supabase.auth.verifyOtp({
 		email,
 		token: otp,

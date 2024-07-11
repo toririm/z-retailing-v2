@@ -14,6 +14,7 @@ https://y-demo.toririm.com/
 > email: test@example.com
 > OTP: 789789
 > ```
+> デモ環境では、購入処理やアイテムの追加など、ご自由にお試しいただけます。
 
 
 ### ユーザー

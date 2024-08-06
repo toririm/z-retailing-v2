@@ -61,7 +61,7 @@ export default function LoginVerify() {
 						<input
 							name="otp"
 							type="text"
-							placeholder="123456"
+							placeholder="ここに入力"
 							className="input input-bordered"
 							autoComplete="off"
 						/>
